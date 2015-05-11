@@ -1,3 +1,6 @@
+local persist = true
+
+local persistHooks = {}
 local hooks = {}
 
 local function Add( event, id, callback )
@@ -6,24 +9,31 @@ local function Add( event, id, callback )
 		error( "bad argument #3 to 'Add' (function expected, got " .. type( callback ) .. ")", 2 )
 	end
 
+	if persistHooks[ event ] and persistHooks[ event ][ id ] then
+		error( "attempt to override persistent hook", 2 )
+	end
+
 	hooks[ event ] = hooks[ event ] or {}
 	hooks[ event ][ id ] = callback
+
+	if persist then
+		persistHooks[ event ] = persistHooks[ event ] or {}
+		persistHooks[ event ][ id ] = true
+	end
 
 end
 
 local function Remove( event, id )
 
 	if not hooks[ event ] then
-		return
+		error( "attempt to remove non-existent hook", 2 )
+	end
+
+	if persistHooks[ event ] and persistHooks[ event ][ id ] then
+		error( "attempt to remove persistent hook", 2 )
 	end
 
 	hooks[ event ][ id ] = nil
-
-end
-
-local function RemoveAll()
-
-	hooks = {}
 
 end
 
@@ -40,8 +50,8 @@ local function Call( event, ... )
 		if not success then
 			
 			print( err )
-			
-			hooks[ event ][ k ] = nil
+
+			hooks[ event ][ id ] = nil -- Even remove persistent hooks
 			
 		end
 
@@ -49,7 +59,7 @@ local function Call( event, ... )
 
 end
 
-function GetTable()
+local function GetTable()
 
 	local ret = {}
 
@@ -63,10 +73,17 @@ function GetTable()
 
 end
 
+local function StopPersist()
+
+	persist = false
+
+end
+
 return {
 	Add = Add,
 	Remove = Remove,
 	RemoveAll = RemoveAll,
 	Call = Call,
-	GetTable = GetTable
+	GetTable = GetTable,
+	StopPersist = StopPersist
 }

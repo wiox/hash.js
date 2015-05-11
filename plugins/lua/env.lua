@@ -1,5 +1,3 @@
-local ENV = {}
-
 --
 -- Returns a copy of a table with all current members read-only
 -- If target is defined, the returned result will be equal to target
@@ -9,8 +7,10 @@ local function ProtectTable( tab, target )
 	local index = {}
 	local ret = target or {}
 
+	--
 	-- Copy new variables in to our table
-	-- Tables are also protected
+	-- Metatable-less subtables are also protected
+	--
 	for k, v in pairs( tab ) do
 
 		if v == target then
@@ -72,8 +72,10 @@ local INDEX = {
 	_G					= ENV,
 	_VERSION			= _VERSION,
 
+	--
+	-- 'Safe' default methods and libraries
+	--
 	assert				= assert,
-	coroutine			= coroutine,
 	error				= error,
 	getmetatable		= getmetatable,
 	ipairs				= ipairs,
@@ -87,35 +89,37 @@ local INDEX = {
 	tonumber			= tonumber,
 	tostring			= tostring,
 	type				= type,
-	xpcall				= xpcall,
 
 	math				= math,
 	string				= string,
 	table				= table,
 	utf8				= utf8,
 
-	cookie				= require "cookie",
-	hook				= require "hook",
-	include				= require "user_include",
-	require				= require "user_require",
-	timer				= require "timer",
+	--
+	-- 3rd party libraries
+	--
+	cookie				= require "./sand_modules/cookie",
+	hook				= require "./sand_modules/hook",
+	include				= require "./sand_modules/include",
+	require				= require "./sand_modules/require",
+	timer				= require "./sand_modules/timer",
 
-	io					= {
-							write = function( ... )
-								io.write( ... )
-							end
-	},
-
-	os					= {
-							time	= os.time,
-							clock	= os.clock,
-							date	= os.date
-	}
+	--
+	-- Modified default libraries
+	--
+	io					= require "./sand_modules/io",
+	os					= require "./sand_modules/os",
 }
 
-function INDEX.load( chunk, chunkname )
+function INDEX.load( chunk, chunkname, _, fenv )
 
-	return load( chunk, chunkname, "t", ENV )
+	if fenv == nil then
+
+		fenv = ENV
+
+	end
+
+	return load( chunk, chunkname, "t", fenv )
 
 end
 
