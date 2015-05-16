@@ -23,6 +23,16 @@ function meta:__index(k)
 	
 end
 
+function meta:__mul( arg )
+	
+	if ( type(arg) == "number" ) then
+		return string.rep( self, arg )
+	end
+	
+	error( "A string can only be multiplied by a number", 2 )
+	
+end
+
 function meta:__mod( arg )
 
 	if ( type( arg ) == "string" ) then
