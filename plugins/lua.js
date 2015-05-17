@@ -128,21 +128,10 @@ bot.on( "UserConnected", function( name, steamID ) {
 	QueueHook( "Connected", [ name, steamID ] );
 } );
 
+
 bot.on( "UserDisconnected", function( name, steamID ) {
 	QueueHook( "Disconnected", [ name, steamID ] );
 } );
-
-bot.on("UserChangedName",function(oldName,newName,steamID) {
-	QueueHook("ChangedName",[oldName,newName,steamID]);
-});
-
-bot.on("UserStartedGame",function(gameName,steamID) {
-	QueueHook("StartedGame",[gameName,steamID]);
-});
-
-bot.on("UserJoinedServer",function(serverIP,port,steamID) {
-	QueueHook("JoinedServer",[serverIP,port,steamID]);
-});
 
 function OnStdOut( data ) {
 
