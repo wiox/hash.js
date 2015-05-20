@@ -100,7 +100,7 @@ setInterval( function() {
 
 	QueueCommand( "] timer.Tick()" );
 
-}, 1000 );
+}, 500 );
 
 setInterval( function() {
 
@@ -173,6 +173,6 @@ bot.registerCommand( "restart", function() {
 	lua.kill();
 	Init();
 
-} );
+}, "Restarts the Lua engine." );
 
 Init();
