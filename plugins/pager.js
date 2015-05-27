@@ -160,8 +160,7 @@ bot.on( "TextMessage", function( username, steamid, message, groupid ) {
             var sqlquery = "SELECT steamid, phrase FROM pager_phrases WHERE instr((?), phrase)";
             var notifications = {}
             if ( !settings.casesensitivephrases ) {
-                message  = message.toLowerCase();
-                sqlquery = "SELECT steamid, phrase FROM pager_phrases WHERE instr((?), LOWER(phrase))";
+                sqlquery = "SELECT steamid, phrase FROM pager_phrases WHERE instr(LOWER((?)), LOWER(phrase))";
             }
 
             db.each( sqlquery, [ message || "" ], // Parameters
