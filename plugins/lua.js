@@ -184,6 +184,10 @@ bot.on( "Message", function( name, steamID, msg, group ) {
 	if ( steamID == group && !bot.isAdmin( steamID ) ) { // Only admins can PM the bot code
 		return;
 	}
+	
+	if ( !bot.isTrusted( steamID ) ) {
+		return;
+	}
 
 	QueueCommand( "SetLastExecutedSteamID( " + steamID + " )", false, true );
 
