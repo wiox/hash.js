@@ -12,7 +12,7 @@ var config = {
 	],
 	
 	Trusted: [
-	
+		"76561198052589582"
 	],
 
 	GitHub: "???"
