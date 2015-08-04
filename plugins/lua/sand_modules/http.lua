@@ -5,9 +5,14 @@ local callbacks = {}
 
 local i = 1;
 
+local function CreateHTTPPacket( url, id )
+	local header = HEADERSTART .. "HTTP," .. 
+		tostring(url) .. ":" .. tostring(id) .. HEADEREND
+	return header
+end
+
 function HTTPCallback ( id, code, body, err )
-    error"ayy";
-    print("CALLBACK "..id);
+    
     if ( not callbacks[id] ) then
         return;
     end
@@ -16,7 +21,7 @@ function HTTPCallback ( id, code, body, err )
     
     callbacks[id] = nil
     
-    local returns = { scall ( callback ( code, body, err ) ) }
+    callback ( code, body, err ) 
     
 end
 
@@ -30,7 +35,7 @@ local function HTTP ( url, callback )
     
     callbacks[i] = callback
     
-    writepacket ( CreatePacket ( tostring(i)..":_", "H") .. tostring(url) )
+    writepacket ( CreateHTTPPacket ( url, i ) )
     writepacket ( EOF )
     
     i = i + 1;

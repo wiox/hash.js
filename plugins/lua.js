@@ -99,6 +99,11 @@ function ParsePacket( data ) {
 			packet.callbackdelayms = Number(parsed[3]) * 1000;
 			packet.callbackreps    = Number(parsed[4]);
 		}
+		else if(packet.type == "HTTP")
+		{
+			packet.url = parsed[2];
+			packet.id = Number(parsed[3]);
+		}
 		else 
 		{
 			console.log("ParsePacket unknown type received: " + packet.type);
@@ -146,7 +151,7 @@ function LuaQuote( str ) {
 				return "\\r";
 
 			case "\0":
-				return "\\0";
+				return "\\x00";
 
 		}
 
@@ -301,6 +306,27 @@ function OnStdOut( data ) {
 					}, packet.callbackdelayms, packet);
 				}
 			}
+			else if(packet.type == "HTTP")
+			{
+				setTimeout(function(id, url)
+				{
+					request(url, function(err, status, body)
+					{
+						
+						console.log("ayy!");
+						console.log(id);
+						if(err)
+						{
+							QueueCommand("HTTPCallback( " + id + ", 0, '', " + LuaQuote(err.toString()) + ")", false, true);
+							return;
+						}
+						
+						QueueCommand("HTTPCallback(" + id + ", " + status.statusCode + ", " + LuaQuote(body) + ")", false, true);
+						
+					});
+				}, 1, packet.id, packet.url);
+				
+			}
 		}
 
 		buf = [ datas[ i + 1 ] ];
@@ -316,6 +342,11 @@ function OnStdOut( data ) {
 bot.registerCommand( "restart", function() {
 
 	lua.kill();
+	for (var k in timers)
+	{
+		clearInterval(timers[k]);
+		timers[k] = undefined;
+	}
 	Init();
 
 }, "Restarts the Lua engine." );
