@@ -1,3 +1,5 @@
+-- require "loadurl"
+-- require "json"
 require "sed"
 require "gmod_defines"
 require "messagestats"
@@ -6,6 +8,6 @@ require "vectors"
 require "http_codes"
 require "algo"
 require "imagereply"
-require "yt"
+-- require "yt"
 
 hook.StopPersist()
