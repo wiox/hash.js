@@ -36,6 +36,6 @@ function yt.RandomVideo(str, retry, isretry)
 		local data = json.decode(b)
 		if not (data.items and #data.items > 0) then if not isretry then print("Result error or no items (not data.items)", retry and "retrying until we find one..." or nil) end if retry then yt.RandomVideo(str, retry, true) end return end
 		local vid = data.items[math.random(1, #data.items)]
-		print(vidbase .. vid.id.videoId .. " (str=" .. randomstr .. "\n" .. vid.snippet.title)
+		print(vidbase .. vid.id.videoId .. " (str=" .. randomstr .. ")\n" .. vid.snippet.title)
 	end)
 end
