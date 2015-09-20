@@ -25,17 +25,28 @@ yt = {}
 
 local vidbase = "http://youtube.com/watch?v="
 
-function yt.RandomVideo(str, retry, isretry)
-	retry = retry or (not str)
-	isretry = isretry or false
+function yt.RandomVideo(str, shouldretry, tries)
 	math.randomseed(os.time())
 	local randomstr = str or random(math.random(3, 24))
+	shouldretry = shouldretry or (not str)
+	tries = tries or 0
 	local url = "https://www.googleapis.com/youtube/v3/search?key=" .. apikey .. "&part=snippet&type=video&maxResults=50&q=" .. urlencode(randomstr)
 	http.Fetch(url, function(c, b)
 		if (c ~= "200" and c ~= 200) then print("HTTP Error: " .. c) return end
 		local data = json.decode(b)
-		if not (data.items and #data.items > 0) then if not isretry then print("Result error or no items (not data.items)", retry and "retrying until we find one..." or nil) end if retry then yt.RandomVideo(str, retry, true) end return end
+		if not (data.items and #data.items > 0) then
+			if tries == 0 then
+				print("Result error or no items (not data.items)", shouldretry and "retrying until we find one..." or nil)
+			elseif tries == 30 then
+				print("Giving up after 30 tries.")
+				return
+			end
+			if shouldretry then
+				yt.RandomVideo(str, shouldretry, tries + 1)
+			end
+			return
+		end
 		local vid = data.items[math.random(1, #data.items)]
-		print(vidbase .. vid.id.videoId .. " (str=" .. randomstr .. ")\n" .. vid.snippet.title)
+		print(vidbase .. vid.id.videoId .. " (str=" .. randomstr .. ", tries=" .. tries .. ")\n" .. vid.snippet.title)
 	end)
 end
