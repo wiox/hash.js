@@ -70,7 +70,7 @@ local function GetVideo(str, method, shouldretry, tries)
 			return
 		end
 		local vid = data.items[math.random(1, #data.items)]
-		print(vidbase .. vid.id.videoId .. " (str=" .. str .. ", tries=" .. tries .. ")\n" .. vid.snippet.title)
+		print(vidbase .. vid.id.videoId .. " (str=" .. qstr .. ", tries=" .. tries .. ")\n" .. vid.snippet.title)
 	end)
 end
 
