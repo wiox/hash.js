@@ -12,7 +12,7 @@ local function random(len) -- credit to swad I guess
 			else
 				out = out .. string.char(math.random(48, 57))
 			end
-		else
+		else -- russki
 			local r2 = math.random(1, 2)
 			if r2 == 1 then
 				out = out .. utf8.char(math.random(0x430, 0x44F))
