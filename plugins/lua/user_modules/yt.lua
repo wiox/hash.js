@@ -32,7 +32,7 @@ function yt.RandomVideo(str, retry)
 	http.Fetch(url, function(c, b)
 		if (c ~= "200" and c ~= 200) then print("HTTP Error: " .. c) return end
 		local data = json.decode(b)
-		if not (data.items and #data.items > 0) then print("Result error or no items (not data.items)", retrying and "retrying..." or nil) if retry then yt.RandomVideo() end return end
+		if not (data.items and #data.items > 0) then print("Result error or no items (not data.items)", retry and "retrying..." or nil) if retry then yt.RandomVideo() end return end
 		local vid = data.items[math.random(1, #data.items)]
 		print(vidbase .. vid.id.videoId .. "\n" .. vid.snippet.title)
 	end)
