@@ -47,7 +47,7 @@ local function GetVideo(str, method, shouldretry, tries)
 	elseif method == "word" then
 		http.Fetch("http://randomword.setgetgo.com/get.php", function(c, b)
 			if c ~= 200 then print("HTTP Error: " .. c) return end
-			GetVideo(b, "word_got")
+			GetVideo(string.gsub(b, "[\r\n]", ""), "word_got")
 		end)
 		return
 	elseif method == "word_got" then
