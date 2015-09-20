@@ -43,7 +43,7 @@ local function GetVideo(str, method, shouldretry, tries)
 		qstr = str
 	elseif method == "chars" then
 		seedrandom()
-		qstr = random(math.random(3, 24))
+		qstr = randomchars(math.random(3, 24))
 	elseif method == "word" then
 		http.Fetch("http://randomword.setgetgo.com/get.php", function(c, b)
 			if c ~= 200 then print("HTTP Error: " .. c) return end
