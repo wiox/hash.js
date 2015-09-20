@@ -32,11 +32,28 @@ yt = {}
 
 local vidbase = "http://youtube.com/watch?v="
 
-local function GetVideo(str, shouldretry, tries)
+local function GetVideo(str, method, shouldretry, tries)
 	math.randomseed(os.time() + math.random())
+	method = method or "keyword"
 	shouldretry = shouldretry or true
 	tries = tries or 0
-	local url = "https://www.googleapis.com/youtube/v3/search?key=" .. apikey .. "&part=snippet&type=video&maxResults=50&q=" .. urlencode(randomstr)
+	local qstr
+	if method == "keyword" then
+		if not str then error("No keyword given. For a truly random video, use yt.RandomVideoChars or yt.RandomVideoWord.") return end
+		qstr = str
+	elseif method == "chars" then
+		seedrandom()
+		qstr = random(math.random(3, 24))
+	elseif method == "word" then
+		http.Fetch("http://randomword.setgetgo.com/get.php", function(c, b)
+			if c ~= 200 then print("HTTP Error: " .. c) return end
+			GetVideo(b, "word_got")
+		end)
+		return
+	elseif method == "word_got" then
+		qstr = str
+	end
+	local url = "https://www.googleapis.com/youtube/v3/search?key=" .. apikey .. "&part=snippet&type=video&maxResults=50&q=" .. urlencode(str)
 	http.Fetch(url, function(c, b)
 		if (c ~= "200" and c ~= 200) then print("HTTP Error: " .. c) return end
 		local data = json.decode(b)
@@ -48,31 +65,23 @@ local function GetVideo(str, shouldretry, tries)
 				return
 			end
 			if shouldretry then
-				timer.Simple(0, function() GetVideo(str, shouldretry, tries + 1) end)
+				timer.Simple(0, function() GetVideo(str, (method == "word_got") and "word" or method, shouldretry, tries + 1) end)
 			end
 			return
 		end
 		local vid = data.items[math.random(1, #data.items)]
-		print(vidbase .. vid.id.videoId .. " (str=" .. randomstr .. ", tries=" .. tries .. ")\n" .. vid.snippet.title)
+		print(vidbase .. vid.id.videoId .. " (str=" .. str .. ", tries=" .. tries .. ")\n" .. vid.snippet.title)
 	end)
 end
 
 function yt.RandomVideo(str)
-	if not str then error("No keyword given. For a truly random video, use yt.RandomVideoChars or yt.RandomVideoWord.") return end
-
 	GetVideo(str)
 end
 
 function yt.RandomVideoChars()
-	seedrandom()
-
-	GetVideo(random(math.random(3, 24)))
+	GetVideo(nil, "chars")
 end
 
 function yt.RandomVideoWord()
-	http.Fetch("http://randomword.setgetgo.com/get.php", function(c, b)
-		if c ~= 200 then print("HTTP Error: " .. c) return end
-		GetVideo(b)
-	end)
-	return
+	GetVideo(nil, "word")
 end
