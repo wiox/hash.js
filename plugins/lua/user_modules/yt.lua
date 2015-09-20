@@ -38,11 +38,11 @@ function yt.RandomVideo(str, shouldretry, tries)
 			if tries == 0 then
 				print("Result error or no items (not data.items)", shouldretry and "retrying until we find one..." or nil)
 			elseif tries == 30 then
-				print("Giving up after 30 tries.")
+				print("Gave up after 30 tries.")
 				return
 			end
 			if shouldretry then
-				yt.RandomVideo(str, shouldretry, tries + 1)
+				timer.Simple(0, function() yt.RandomVideo(str, shouldretry, tries + 1) end)
 			end
 			return
 		end
