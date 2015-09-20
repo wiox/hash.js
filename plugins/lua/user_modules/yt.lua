@@ -53,7 +53,7 @@ local function GetVideo(str, method, shouldretry, tries)
 	elseif method == "word_got" then
 		qstr = str
 	end
-	local url = "https://www.googleapis.com/youtube/v3/search?key=" .. apikey .. "&part=snippet&type=video&maxResults=50&q=" .. urlencode(str)
+	local url = "https://www.googleapis.com/youtube/v3/search?key=" .. apikey .. "&part=snippet&type=video&maxResults=50&q=" .. urlencode(qstr)
 	http.Fetch(url, function(c, b)
 		if (c ~= "200" and c ~= 200) then print("HTTP Error: " .. c) return end
 		local data = json.decode(b)
