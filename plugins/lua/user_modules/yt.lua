@@ -3,7 +3,6 @@ local function random(len) -- credit to swad I guess
 	local out = ""
 	local r1 = math.random(1, 2)
 	for i = 1, len or 11 do
-		math.randomseed(os.time() + math.random())
 		if r1 == 1 then -- no russki :(
 			local r2 = math.random(1, 3)
 			if r2 == 1 then
