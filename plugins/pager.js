@@ -97,7 +97,7 @@ function ParsePagerSettings( usersettings ) {
                     break;
                 case "b":
                     value = value.toString().toLowerCase();
-                    value = value[0] == "t" ? true : false;
+                    value = value[0] == "t";
                     break;
                 default:
                     value = value.toString();
@@ -192,7 +192,7 @@ bot.on( "TextMessage", function( username, steamid, message, groupid ) {
                     if ( row ) {
                         notifications[row.steamid] = {
                             phrase:        row.phrase,
-                            usewordbounds: row.usewordbounds == "1" ? true : false,
+                            usewordbounds: row.usewordbounds == "1",
                             message:       message,
                             username:      username
                         }
@@ -305,7 +305,7 @@ bot.registerCommand( "pagerls", function( name, steamid, args, argstr, group ) {
         function( error, row ) { // Row callback
             message += phraseid + " - ";
 
-            var usewordbounds = (row.usewordbounds == "1") ? true : false;
+            var usewordbounds = (row.usewordbounds == "1");
             if ( usewordbounds ) {
                 message += "\\b";
             }

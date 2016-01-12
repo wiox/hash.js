@@ -91,7 +91,7 @@ function ParsePacket( data ) {
 		if(packet.type == "Lua")
 		{
 			packet.crc   = Number(parsed[2]);
-			packet.islua = parsed[3] == "1" ? true : false;
+			packet.islua = parsed[3] == "1";
 			packet.data  = parsed[4];
 		}
 		else if(packet.type == "SimpleTimer")
