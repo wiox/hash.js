@@ -24,14 +24,14 @@ bot.on( "Message", function( name, steamID, msg, group ) {
 
 		var data = JSON.parse( body );
 
-		if ( !data.items || !data.items[0] || !data.items[0].snippet || !data.items[0].statistics || !data.items[0].statistics.likeCount || !data.items[0].statistics.dislikeCount || !data.items[0].snippet.title )
+		var likeCount = parseInt(data.items[0].statistics.likeCount);
+		var dislikeCount = parseInt(data.items[0].statistics.dislikeCount);
+
+        if ( !data.items || !data.items[0] || !data.items[0].snippet || !data.items[0].statistics || !likeCount || !dislikeCount || !data.items[0].snippet.title )
 			return; // Fuck YouTube
 
-		var entry = data.entry;
-
-		var starCount = Math.round( 5 * (parseInt(data.items[0].statistics.likeCount)/(parseInt(data.items[0].statistics.likeCount) + parseInt(data.items[0].statistics.dislikeCount))) );
-		if ( starCount == 1/0 ) 
-			starCount = 0;// Fuck infinity
+		var starCount = Math.round(5 * (likeCount / (likeCount + dislikeCount)));
+		starCount = Math.min(Math.max(starCount, 0), 5);
 
 		bot.sendMessage( "YouTube: " + data.items[0].snippet.title + " [" + String_Prototype_Repeat_Is_NonStandard[ starCount ] + "]", group );
 
