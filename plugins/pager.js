@@ -240,22 +240,22 @@ bot.registerCommand( "pageradd", function( name, steamid, args, argstr, group ) 
             argstr = wordboundsmatch[1];
         }
 
-        var matchphrase = undefined;
+        var matchPhrase;
         db.each( "SELECT phrase, usewordbounds FROM pager_phrases WHERE steamid=(?) AND instr((?), phrase)",
             [ steamid, argstr ],    // Parameters
             function( error, row ){ // Row callback
                 if ( row && row.phrase && row.usewordbounds == "0" ) {
-                    matchphrase = row.phrase;
+                    matchPhrase = row.phrase;
                 }
             },
             function( error, numrows ){ // Completion callback
-                if ( !matchphrase ) {   // This phrase doesn't contain another substring phrase
+                if ( !matchPhrase ) {   // This phrase doesn't contain another substring phrase
                     bot.addFriend( steamid );
                     db.run( "INSERT OR IGNORE INTO pager_phrases VALUES ((?), (?), (?))",
                     [ steamid, argstr, usewordbounds ] );
                 } else {
                     var message = "The phrase \"" + argstr + "\" matches the already existing phrase ";
-                    message += "\"" + matchphrase + "\".";
+                    message += "\"" + matchPhrase + "\".";
                     bot.sendMessage( message, group )
                 }
             }
