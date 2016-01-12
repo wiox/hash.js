@@ -228,8 +228,6 @@ bot.registerCommand( "pageradd", function( name, steamid, args, argstr, group ) 
            usage += "    Note: You can wrap your word/phrase with \\b tags to use word boundaries.\n";
            usage += "    Example: `.pageradd \"\\bley\\b\"` will match the phrase 'ley' only when it is by itself.\n";
         bot.sendMessage( usage, group );
-        return
-
     } else {
         if ( argstr[0] == "\"" && argstr[argstr.length-1] == "\"" ) { // Allow exact phrase matching
             argstr = argstr.substr( 1, argstr.length-2 ); // Remove beginning and ending quotes
