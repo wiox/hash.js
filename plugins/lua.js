@@ -32,7 +32,7 @@ function QueueCommand( cmd, sandbox, showerror, steamid, groupid ) {
 
 	if ( cmd ) {
 		if ( cmd[0] == "]" ) {
-			showerror = true
+			showerror = true;
 			cmd = cmd.substring(1)
 		}
 
@@ -56,7 +56,7 @@ function QueueCommand( cmd, sandbox, showerror, steamid, groupid ) {
 }
 
 function CreateHeader( cmd ) {
-	var header = "["
+	var header = "[";
 
 	if ( cmd && typeof( cmd ) == "object" ) {
 
@@ -72,7 +72,7 @@ function CreateHeader( cmd ) {
 }
 
 function ParsePacket( data ) {
-	var packet = {}
+	var packet = {};
 
 	if ( data[0] != "[" ) { // No header, dump to stdout
 		console.log( "Packet received with no header! \"" + data + "\"" );

@@ -12,7 +12,7 @@ var hour = 60 * 60;
 var day = 60 * 60 * 24;
 var week = 60 * 60 * 24 * 7;
 var month = 60 * 60 * 24 * 30;
-var year = 60 * 60 * 24 * 365
+var year = 60 * 60 * 24 * 365;
 
 function plur( num, suffix ) {
 	num = Math.floor( num );

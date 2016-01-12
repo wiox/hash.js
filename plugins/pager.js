@@ -1,6 +1,6 @@
 // Notifies a user via PM when a string is mentioned in chat.
 var config = require("../config");
-var lastactive = {} // Object store for the last time a user did something
+var lastactive = {}; // Object store for the last time a user did something
 
 var defaultsettings = {
     notifywhenpresent: {
@@ -15,7 +15,7 @@ var defaultsettings = {
         default: false,
         helptext: "Should the pager phrases be matched case-sensitive or not."
     }
-}
+};
 
 db.run( "CREATE TABLE IF NOT EXISTS pager_phrases (steamid VARCHAR(22),\
         phrase VARCHAR(32), usewordbounds BOOLEAN, PRIMARY KEY (steamid, phrase))"
@@ -115,10 +115,10 @@ function ParsePagerSettings( usersettings ) {
 // This will go through the user's settings to make sure the user wants
 // to be notified under the current circumstances.
 function TryPageUser( targetsid, matched, message, speaker ) {
-    var chatroom = bot.Client.chatRooms[config.Group]
+    var chatroom = bot.Client.chatRooms[config.Group];
 
     if ( chatroom ) {
-        var usersettings = {}
+        var usersettings = {};
         db.each( "SELECT steamid, key, valuetype, value FROM pager_settings WHERE steamid=(?)",
             [ targetsid ],           // Parameters
             function( error, row ) { // Row callback
@@ -138,7 +138,7 @@ function TryPageUser( targetsid, matched, message, speaker ) {
                         bot.sendMessage( speaker + ": " + message, targetsid );
                     } else {
                         var cooldown = settings.notifyawaytime;
-                        var nextpage = lastactive[targetsid] + cooldown
+                        var nextpage = lastactive[targetsid] + cooldown;
                         if ( nextpage <= Math.floor((new Date).getTime()/1000) ) {
                             bot.sendMessage( speaker + ": " + message, targetsid );
                         }
@@ -166,9 +166,9 @@ bot.on( "UserConnected", function( name, steamID ) {
 bot.on( "TextMessage", function( username, steamid, message, groupid ) {
 
     if ( groupid != bot.GroupID )
-        return
+        return;
 
-    var usersettings = {}
+    var usersettings = {};
     db.each( "SELECT steamid, key, valuetype, value FROM pager_settings WHERE steamid=(?)",
         [ steamid ],             // Parameters
         function( error, row ) { // Row callback
@@ -182,7 +182,7 @@ bot.on( "TextMessage", function( username, steamid, message, groupid ) {
         function( error, numrows ) { // Completion callback
             var settings = ParsePagerSettings( usersettings );
             var sqlquery = "SELECT steamid, phrase, usewordbounds FROM pager_phrases WHERE instr((?), phrase) AND steamid != (?)";
-            var notifications = {}
+            var notifications = {};
             if ( !settings.casesensitivephrases ) {
                 sqlquery = "SELECT steamid, phrase, usewordbounds FROM pager_phrases WHERE instr(LOWER((?)), LOWER(phrase)) AND steamid != (?)";
             }
@@ -236,7 +236,7 @@ bot.registerCommand( "pageradd", function( name, steamid, args, argstr, group ) 
         }
 
         var usewordbounds = false; // Should this phrase use word boundaries
-        var wordboundsmatch = argstr.match( /^\\b(.*)\\b$/ )
+        var wordboundsmatch = argstr.match( /^\\b(.*)\\b$/ );
         if ( wordboundsmatch && wordboundsmatch[1] ) {
             usewordbounds = true;
             argstr = wordboundsmatch[1];
@@ -303,9 +303,9 @@ bot.registerCommand( "pagerls", function( name, steamid, args, argstr, group ) {
     db.each( "SELECT phrase, usewordbounds FROM pager_phrases WHERE steamid=(?)",
         [ steamid ],             // Parameters
         function( error, row ) { // Row callback
-            message += phraseid + " - "
+            message += phraseid + " - ";
 
-            var usewordbounds = (row.usewordbounds == "1") ? true : false
+            var usewordbounds = (row.usewordbounds == "1") ? true : false;
             if ( usewordbounds ) {
                 message += "\\b";
             }
@@ -416,7 +416,7 @@ bot.registerCommand( "pagersetting", function( name, steamid, args, argstr, grou
         );
 
     } else {
-        var message = "Pager Commands:\n"
+        var message = "Pager Commands:\n";
         message += "\t.pagersetting list              : Return all availible options for the pager system.\n";
         message += "\t.pagersetting get [key]         : Get the value of the current option by [key].\n";
         message += "\t.pagersetting set [key] [value] : Set the option [key] to [value] or default if [value] not specified.\n";
