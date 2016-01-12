@@ -393,24 +393,24 @@ bot.registerCommand( "pagersetting", function( name, steamid, args, argstr, grou
             bot.sendMessage( "You must specify a key. `.pagersetting set [key] [value]`", group );
             return
         }
-        var key   = args[1];
+        var pagerKey   = args[1];
         var value = args[2];
 
-        if ( !defaultsettings[key] ) {
-            var message = "\"" + key + "\" isn't a valid setting. ";
+        if ( !defaultsettings[pagerKey] ) {
+            var message = "\"" + pagerKey + "\" isn't a valid setting. ";
             message += "Use `.pagersetting list` for a list of valid settings";
             bot.sendMessage( message, group );
             return;
         }
-        var datatype = typeof(defaultsettings[key].default);
+        var datatype = typeof(defaultsettings[pagerKey].default);
         datatype = datatype ? datatype[0] : "s";
 
         if ( !value ) { // Set to default when no value specified
-            value = defaultsettings[key].default;
+            value = defaultsettings[pagerKey].default;
         }
 
         db.run( "INSERT OR REPLACE INTO pager_settings VALUES ((?), (?), (?), (?))",
-            [ steamid, key, datatype, value ] // Parameters
+            [ steamid, pagerKey, datatype, value ] // Parameters
         );
 
     } else {
