@@ -112,7 +112,7 @@ function ParsePacket( data ) {
 		    packet.id = Number(parsed[3]);
 			packet.steamid = parsed[4];
 		}
-		else
+		else if(packet.type != "KillNotif")
 		{
 			console.log("ParsePacket unknown type received: " + packet.type);
 		}
@@ -195,12 +195,6 @@ function Require( path ) {
 	QueueCommand( "require(" + LuaQuote( path ) + ")", true, true );
 
 }
-
-setInterval( function() {
-
-	QueueCommand( "cookie.Save()", false, true );
-
-}, 1000 * 60 * 60 );
 
 bot.on( "Message", function( name, steamID, msg, group ) {
 
@@ -292,6 +286,14 @@ function OnStdOut( data ) {
 
 				userpackets[crc] = null;
 			}
+            else if(packet.type == "KillNotif")
+            {
+                if (this.pendingKill)
+                {
+                    this.kill();
+                    Init();
+                }
+            }
 			else if(packet.type == "SimpleTimer")
 			{
 				setTimeout(function(packet)
@@ -373,12 +375,12 @@ function OnStdOut( data ) {
 							else
 							    setTimeout(function(id, http_url)
 							    {
-								var http_request_options = {
-								  url: http_url,
-								  headers: {
-								    'User-Agent': 'Some Dank Fuckin\' GLua Coders (Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; GTB7.4; InfoPath.2; SV1; .NET CLR 3.3.69573; WOW64; en-US))'
-								  }
-								};
+    								var http_request_options = {
+    								  url: http_url,
+    								  headers: {
+    								    'User-Agent': 'Some Dank Fuckin\' GLua Coders (Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; GTB7.4; InfoPath.2; SV1; .NET CLR 3.3.69573; WOW64; en-US))'
+    								  }
+    								};
 
 							        request(http_request_options, function(err, status, body)
 							        {
@@ -413,13 +415,24 @@ function OnStdOut( data ) {
 
 bot.registerCommand( "restart", function() {
 
-	lua.kill();
-	for (var k in timers)
-	{
-		clearInterval(timers[k]);
-		timers[k] = undefined;
-	}
-	Init();
+    for (var k in timers)
+    {
+        clearInterval(timers[k]);
+        timers[k] = undefined;
+    }
+    lua.pendingKill = true;
+    QueueCommand("SendKillNotif()", false);
+    setTimeout(() => {
+        console.log("KillNotif took too long to be received, force restarting.");
+        if (lua.pendingKill) // it hasn't killed, someone might have infinite looped it somehow
+        {
+            lua.kill();
+            Init();
+        }
+    }, 10000);
+
+	//lua.kill();
+	//Init();
 
 }, "Restarts the Lua engine." );
 
