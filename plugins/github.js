@@ -9,8 +9,8 @@ github.on( "data", function( notification ) {
 
 	github.markAsRead();
 
-	var notificationTime = new Date( notification.updated_at )
-	var currentTime = new Date()
+	var notificationTime = new Date( notification.updated_at );
+	var currentTime = new Date();
 
 	// Only show notifications if less than 3 minutes old
 	if ( ( ( currentTime - notificationTime ) / 1e3 | 0 ) > 180 )

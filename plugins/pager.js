@@ -1,6 +1,6 @@
 // Notifies a user via PM when a string is mentioned in chat.
 var config = require("../config");
-var lastactive = {} // Object store for the last time a user did something
+var lastactive = {}; // Object store for the last time a user did something
 
 var defaultsettings = {
     notifywhenpresent: {
@@ -15,7 +15,7 @@ var defaultsettings = {
         default: false,
         helptext: "Should the pager phrases be matched case-sensitive or not."
     }
-}
+};
 
 db.run( "CREATE TABLE IF NOT EXISTS pager_phrases (steamid VARCHAR(22),\
         phrase VARCHAR(32), usewordbounds BOOLEAN, PRIMARY KEY (steamid, phrase))"
@@ -97,7 +97,7 @@ function ParsePagerSettings( usersettings ) {
                     break;
                 case "b":
                     value = value.toString().toLowerCase();
-                    value = value[0] == "t" ? true : false;
+                    value = value[0] == "t";
                     break;
                 default:
                     value = value.toString();
@@ -115,10 +115,10 @@ function ParsePagerSettings( usersettings ) {
 // This will go through the user's settings to make sure the user wants
 // to be notified under the current circumstances.
 function TryPageUser( targetsid, matched, message, speaker ) {
-    var chatroom = bot.Client.chatRooms[config.Group]
+    var chatroom = bot.Client.chatRooms[config.Group];
 
     if ( chatroom ) {
-        var usersettings = {}
+        var usersettings = {};
         db.each( "SELECT steamid, key, valuetype, value FROM pager_settings WHERE steamid=(?)",
             [ targetsid ],           // Parameters
             function( error, row ) { // Row callback
@@ -138,7 +138,7 @@ function TryPageUser( targetsid, matched, message, speaker ) {
                         bot.sendMessage( speaker + ": " + message, targetsid );
                     } else {
                         var cooldown = settings.notifyawaytime;
-                        var nextpage = lastactive[targetsid] + cooldown
+                        var nextpage = lastactive[targetsid] + cooldown;
                         if ( nextpage <= Math.floor((new Date).getTime()/1000) ) {
                             bot.sendMessage( speaker + ": " + message, targetsid );
                         }
@@ -166,9 +166,9 @@ bot.on( "UserConnected", function( name, steamID ) {
 bot.on( "TextMessage", function( username, steamid, message, groupid ) {
 
     if ( groupid != bot.GroupID )
-        return
+        return;
 
-    var usersettings = {}
+    var usersettings = {};
     db.each( "SELECT steamid, key, valuetype, value FROM pager_settings WHERE steamid=(?)",
         [ steamid ],             // Parameters
         function( error, row ) { // Row callback
@@ -182,7 +182,7 @@ bot.on( "TextMessage", function( username, steamid, message, groupid ) {
         function( error, numrows ) { // Completion callback
             var settings = ParsePagerSettings( usersettings );
             var sqlquery = "SELECT steamid, phrase, usewordbounds FROM pager_phrases WHERE instr((?), phrase) AND steamid != (?)";
-            var notifications = {}
+            var notifications = {};
             if ( !settings.casesensitivephrases ) {
                 sqlquery = "SELECT steamid, phrase, usewordbounds FROM pager_phrases WHERE instr(LOWER((?)), LOWER(phrase)) AND steamid != (?)";
             }
@@ -192,7 +192,7 @@ bot.on( "TextMessage", function( username, steamid, message, groupid ) {
                     if ( row ) {
                         notifications[row.steamid] = {
                             phrase:        row.phrase,
-                            usewordbounds: row.usewordbounds == "1" ? true : false,
+                            usewordbounds: row.usewordbounds == "1",
                             message:       message,
                             username:      username
                         }
@@ -228,36 +228,34 @@ bot.registerCommand( "pageradd", function( name, steamid, args, argstr, group ) 
            usage += "    Note: You can wrap your word/phrase with \\b tags to use word boundaries.\n";
            usage += "    Example: `.pageradd \"\\bley\\b\"` will match the phrase 'ley' only when it is by itself.\n";
         bot.sendMessage( usage, group );
-        return
-
     } else {
         if ( argstr[0] == "\"" && argstr[argstr.length-1] == "\"" ) { // Allow exact phrase matching
             argstr = argstr.substr( 1, argstr.length-2 ); // Remove beginning and ending quotes
         }
 
         var usewordbounds = false; // Should this phrase use word boundaries
-        var wordboundsmatch = argstr.match( /^\\b(.*)\\b$/ )
+        var wordboundsmatch = argstr.match( /^\\b(.*)\\b$/ );
         if ( wordboundsmatch && wordboundsmatch[1] ) {
             usewordbounds = true;
             argstr = wordboundsmatch[1];
         }
 
-        var matchphrase = undefined;
+        var matchPhrase;
         db.each( "SELECT phrase, usewordbounds FROM pager_phrases WHERE steamid=(?) AND instr((?), phrase)",
             [ steamid, argstr ],    // Parameters
             function( error, row ){ // Row callback
                 if ( row && row.phrase && row.usewordbounds == "0" ) {
-                    matchphrase = row.phrase;
+                    matchPhrase = row.phrase;
                 }
             },
             function( error, numrows ){ // Completion callback
-                if ( !matchphrase ) {   // This phrase doesn't contain another substring phrase
+                if ( !matchPhrase ) {   // This phrase doesn't contain another substring phrase
                     bot.addFriend( steamid );
                     db.run( "INSERT OR IGNORE INTO pager_phrases VALUES ((?), (?), (?))",
                     [ steamid, argstr, usewordbounds ] );
                 } else {
                     var message = "The phrase \"" + argstr + "\" matches the already existing phrase ";
-                    message += "\"" + matchphrase + "\".";
+                    message += "\"" + matchPhrase + "\".";
                     bot.sendMessage( message, group )
                 }
             }
@@ -303,9 +301,9 @@ bot.registerCommand( "pagerls", function( name, steamid, args, argstr, group ) {
     db.each( "SELECT phrase, usewordbounds FROM pager_phrases WHERE steamid=(?)",
         [ steamid ],             // Parameters
         function( error, row ) { // Row callback
-            message += phraseid + " - "
+            message += phraseid + " - ";
 
-            var usewordbounds = (row.usewordbounds == "1") ? true : false
+            var usewordbounds = (row.usewordbounds == "1");
             if ( usewordbounds ) {
                 message += "\\b";
             }
@@ -395,28 +393,28 @@ bot.registerCommand( "pagersetting", function( name, steamid, args, argstr, grou
             bot.sendMessage( "You must specify a key. `.pagersetting set [key] [value]`", group );
             return
         }
-        var key   = args[1];
+        var pagerKey   = args[1];
         var value = args[2];
 
-        if ( !defaultsettings[key] ) {
-            var message = "\"" + key + "\" isn't a valid setting. ";
+        if ( !defaultsettings[pagerKey] ) {
+            var message = "\"" + pagerKey + "\" isn't a valid setting. ";
             message += "Use `.pagersetting list` for a list of valid settings";
             bot.sendMessage( message, group );
             return;
         }
-        var datatype = typeof(defaultsettings[key].default);
+        var datatype = typeof(defaultsettings[pagerKey].default);
         datatype = datatype ? datatype[0] : "s";
 
         if ( !value ) { // Set to default when no value specified
-            value = defaultsettings[key].default;
+            value = defaultsettings[pagerKey].default;
         }
 
         db.run( "INSERT OR REPLACE INTO pager_settings VALUES ((?), (?), (?), (?))",
-            [ steamid, key, datatype, value ] // Parameters
+            [ steamid, pagerKey, datatype, value ] // Parameters
         );
 
     } else {
-        var message = "Pager Commands:\n"
+        var message = "Pager Commands:\n";
         message += "\t.pagersetting list              : Return all availible options for the pager system.\n";
         message += "\t.pagersetting get [key]         : Get the value of the current option by [key].\n";
         message += "\t.pagersetting set [key] [value] : Set the option [key] to [value] or default if [value] not specified.\n";

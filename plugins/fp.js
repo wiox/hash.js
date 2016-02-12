@@ -33,7 +33,7 @@ function HandlePosts( posts ) {
 	// Handle newer posts first
 	for ( var i = posts.length - 1; i >= 0; i-- ) {
 
-		var post = posts[ i ][ "$" ]
+		var post = posts[ i ][ "$" ];
 
 		lastPostTime = Math.max( post.date, lastPostTime );
 
@@ -116,7 +116,7 @@ function RequestTicker() {
 			aj:			1,
 			lasttime:	lastPostTime
 		}
-	}
+	};
 
 	request( "http://facepunch.com/fp_ticker.php", options, OnTicker );
 
