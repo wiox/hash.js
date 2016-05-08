@@ -1,11 +1,12 @@
-var request		= require( "request" );
+var cloudscraper	= require( "cloudscraper" );
 var xml2js 		= require( "xml2js" );
-var entities 	= new ( require( "html-entities" ).AllHtmlEntities );
+var entities 		= new ( require( "html-entities" ).AllHtmlEntities );
 
 var maxTitleSize = 60;
 var lastPostTime = 0;
 var readyToGo = false;
 var handledPosts = {};
+var requestingData = false;
 
 // Setup our threads table
 db.run( "CREATE TABLE IF NOT EXISTS threads ( id INTEGER PRIMARY KEY AUTOINCREMENT, thread TEXT UNIQUE )" );
@@ -89,6 +90,8 @@ function HandlePosts( posts ) {
 
 function OnTicker( error, res, body ) {
 
+	requestingData = false;
+
 	if ( error ) {
 		console.trace( error );
 		return;
@@ -111,15 +114,22 @@ function OnTicker( error, res, body ) {
 
 function RequestTicker() {
 
+	if (requestingData)
+		return;
+
 	var options = {
+		method: 'GET',
+		url: 'http://facepunch.com/fp_ticker.php',
+		encoding: null,
 		qs: {
 			aj:			1,
 			lasttime:	lastPostTime
 		}
 	}
 
-	request( "http://facepunch.com/fp_ticker.php", options, OnTicker );
+	cloudscraper.request(options, OnTicker);
 
+	requestingData = true;
 }
 
 setInterval( RequestTicker, 2500 );
