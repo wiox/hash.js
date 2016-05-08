@@ -25,6 +25,7 @@
 		"buffer-crc32":         "0.2.5",
 		"steam-trade":          "git://github.com/seishun/node-steam-trade.git",
 		"steam-tradeoffers":    "^2.0.1",
-		"steam-web-api-key":    "0.0.1"
+		"steam-web-api-key":    "0.0.1",
+		"cloudscraper"		"1.2.2"
 	}
 }
