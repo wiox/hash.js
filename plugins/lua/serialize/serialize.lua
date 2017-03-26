@@ -171,7 +171,7 @@ local function serialize( t )
 
 	local dat = {}
 
-	local step = 2048;
+	local step = 512;
 	for i = 1, TableLength - step + 1, step do
 		dat[ (i - 1) / step + 1 ] = pack(
 			concat( FormatTable, "", i, i + step - 1 ),
